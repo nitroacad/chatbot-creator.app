@@ -396,12 +396,12 @@ class StudioApp {
 
     const content = document.getElementById('appContent');
     content.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
           <a href="#/chatbots" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px;">← Back</a>
-          <span style="font-size: 13px; color: var(--slate-500);">ID: <code>${bot.id}</code></span>
+          <span style="font-size: 12px; color: var(--slate-500); word-break: break-all;">ID: <code>${bot.id}</code></span>
         </div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="btn btn-secondary" id="btnSaveDraft">Save Draft</button>
           <button class="btn btn-primary" id="btnPublish">Publish Chatbot</button>
         </div>

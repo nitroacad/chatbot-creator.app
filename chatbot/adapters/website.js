@@ -32,6 +32,13 @@ export class WebsiteAdapter extends AdapterInterface {
     if (!this.container) {
       this.container = document.createElement('div');
       this.container.id = `cb-root-${this.config.id}`;
+      // In standalone website mode, fix host to viewport
+      this.container.style.position = 'fixed';
+      this.container.style.bottom = '16px';
+      this.container.style.right = this.config.appearance && this.config.appearance.position === 'bottom-left' ? 'auto' : '16px';
+      this.container.style.left = this.config.appearance && this.config.appearance.position === 'bottom-left' ? '16px' : 'auto';
+      this.container.style.zIndex = '2147483647';
+      this.container.style.maxWidth = 'calc(100vw - 32px)';
       document.body.appendChild(this.container);
     }
 

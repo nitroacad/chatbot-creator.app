@@ -53,11 +53,15 @@ export class ChatbotRenderer {
       :host {
         all: initial;
         font-family: ${fontFamily};
-        position: fixed;
-        ${appearance.position === 'bottom-left' ? 'left: 20px;' : 'right: 20px;'}
-        bottom: 20px;
+        position: absolute;
+        bottom: 12px;
+        ${appearance.position === 'bottom-left' ? 'left: 12px;' : 'right: 12px;'};
         z-index: 2147483647;
         box-sizing: border-box;
+        max-width: calc(100% - 24px);
+        max-height: calc(100% - 24px);
+        display: flex;
+        flex-direction: column;
       }
 
       * {
@@ -98,7 +102,9 @@ export class ChatbotRenderer {
         display: flex;
         flex-direction: column;
         width: min(calc(100vw - 32px), ${appearance.width || 380}px);
+        max-width: 100%;
         height: min(calc(100vh - 100px), ${appearance.height || 580}px);
+        max-height: 100%;
         background: ${bg};
         color: ${text};
         border-radius: ${radius};
@@ -106,6 +112,13 @@ export class ChatbotRenderer {
         border: 1px solid ${border};
         overflow: hidden;
         animation: slideUp 0.25s ease-out;
+      }
+
+      @media (max-width: 480px) {
+        .chat-window {
+          width: calc(100vw - 24px);
+          height: calc(100vh - 80px);
+        }
       }
 
       @keyframes slideUp {
