@@ -621,24 +621,51 @@ class StudioApp {
 
           <!-- TAB 8: Publish & Embed -->
           <div class="builder-panel" id="tab-publish">
-            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">Website Installation Snippet</h3>
-            <p style="font-size: 13px; color: var(--slate-600);">Copy and paste this lightweight snippet before the closing <code>&lt;/body&gt;</code> tag on your website.</p>
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">Website Installation Snippets</h3>
+            <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px;">Choose between the self-contained embed (guaranteed to work instantly on any external site without a database) or hosted URL embed.</p>
 
-            <div class="code-box">
-              <pre>&lt;!-- Zero-Framework Custom Chatbot Embed --&gt;
+            <!-- Option A: Self-Contained Instant Embed -->
+            <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h4 style="font-size: 13.5px; font-weight: 600; color: var(--primary);">Option 1: Universal Zero-Dependency Embed (Recommended)</h4>
+                <span class="badge badge-published" style="font-size: 11px;">Instant Display</span>
+              </div>
+              <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 10px;">Includes your assistant's customized responses directly in the script tag. Guaranteed to display on WordPress, Shopify, Webflow, GitHub Pages, or any HTML page with zero setup.</p>
+              <div class="code-box">
+                <pre>&lt;!-- Universal Zero-Framework Custom Chatbot Embed --&gt;
+&lt;script
+  src="${window.location.origin}/chatbot/loader.js"
+  data-chatbot-id="${bot.id}"
+  data-chatbot-data="${encodeURIComponent(JSON.stringify(bot))}"
+  async
+&gt;&lt;/script&gt;</pre>
+              </div>
+            </div>
+
+            <!-- Option B: Hosted / Dynamic URL Embed -->
+            <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+              <h4 style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px;">Option 2: Cloud / Dynamic Config Loader</h4>
+              <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 10px;">Loads configuration dynamically from your origin server or template repository.</p>
+              <div class="code-box">
+                <pre>&lt;!-- Dynamic Chatbot Loader --&gt;
 &lt;script
   src="${window.location.origin}/chatbot/loader.js"
   data-chatbot-id="${bot.id}"
   async
 &gt;&lt;/script&gt;</pre>
+              </div>
             </div>
 
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 16px;">
               <h4 style="font-size: 13.5px; font-weight: 600; margin-bottom: 6px;">Domain Security Controls</h4>
               <div class="form-group">
                 <label class="form-label">Allowed Hostname Domains (comma-separated, * for all)</label>
                 <input type="text" id="cfg_allowedDomains" class="form-input" value="${(bot.integrations && bot.integrations.website && bot.integrations.website.allowedDomains ? bot.integrations.website.allowedDomains.join(', ') : '*')}" />
               </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
+              <a href="demo/index.html" target="_blank" class="btn btn-secondary" style="text-decoration: none;">Launch External Website Demo</a>
             </div>
           </div>
         </div>
