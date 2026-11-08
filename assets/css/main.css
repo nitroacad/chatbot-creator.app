@@ -42,6 +42,12 @@
   padding: 0;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--slate-50);
@@ -58,12 +64,16 @@ a {
 
 button, input, select, textarea {
   font: inherit;
+  max-width: 100%;
 }
 
 /* App Shell Layout */
 #app {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -76,6 +86,7 @@ button, input, select, textarea {
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 50;
 }
 
 .brand-header {
@@ -97,6 +108,11 @@ button, input, select, textarea {
   justify-content: center;
   font-weight: 700;
   font-size: 18px;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  min-width: 0;
 }
 
 .brand-text h1 {
@@ -104,6 +120,9 @@ button, input, select, textarea {
   font-weight: 700;
   color: var(--slate-900);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-text span {
@@ -131,6 +150,7 @@ button, input, select, textarea {
   font-weight: 500;
   font-size: 14px;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -148,6 +168,7 @@ button, input, select, textarea {
   width: 18px;
   height: 18px;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .sidebar-footer {
@@ -159,36 +180,45 @@ button, input, select, textarea {
 
 .main-content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  width: 100%;
 }
 
 .top-bar {
-  height: 64px;
+  min-height: 64px;
   background-color: #ffffff;
   border-bottom: 1px solid var(--slate-200);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 12px 32px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .page-title {
   font-size: 18px;
   font-weight: 600;
   color: var(--slate-900);
+  min-width: 0;
+  word-break: break-word;
 }
 
 .content-body {
   padding: 32px;
   flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 /* Common UI Components */
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
@@ -197,6 +227,8 @@ button, input, select, textarea {
   cursor: pointer;
   border: 1px solid transparent;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .btn-primary {
@@ -230,11 +262,13 @@ button, input, select, textarea {
 
 .badge {
   display: inline-flex;
+  align-items: center;
   padding: 2px 8px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .badge-published {
@@ -253,6 +287,8 @@ button, input, select, textarea {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: 24px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* Toast Notifications */
@@ -260,10 +296,12 @@ button, input, select, textarea {
   position: fixed;
   bottom: 24px;
   right: 24px;
+  max-width: calc(100vw - 32px);
   display: flex;
   flex-direction: column;
   gap: 8px;
   z-index: 99999;
+  pointer-events: none;
 }
 
 .toast {
@@ -277,7 +315,8 @@ button, input, select, textarea {
   align-items: center;
   gap: 10px;
   animation: toastIn 0.2s ease-out;
-  min-width: 260px;
+  pointer-events: auto;
+  word-break: break-word;
 }
 
 .toast.toast-success { border-left: 4px solid var(--success); }
