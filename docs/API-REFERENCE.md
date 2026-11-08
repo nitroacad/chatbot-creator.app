@@ -1,6 +1,25 @@
 # JavaScript API & Adapter Reference
 
-This document details the public API contract for the runtime engine, adapters, and configuration tools.
+This document details the public API contract for the runtime engine, adapters, configuration tools, and the self-contained widget bundle.
+
+---
+
+## 0. Standalone Widget Bundle & Embed Loader
+Located in `chatbot/chatbot.bundle.js` and `chatbot/loader.js`.
+
+### Global Namespace (`window.ZeroFrameworkChatbot`)
+The standalone bundle attaches a clean global namespace for programmatic initialization:
+- `ZeroFrameworkChatbot.init(config, container?)`: Asynchronously initializes runtime and mounts Shadow DOM widget into specified container or default fixed viewport root. Returns `WebsiteAdapter` instance.
+- `ZeroFrameworkChatbot.ChatbotRuntime`: The core runtime engine class.
+- `ZeroFrameworkChatbot.KnowledgeEngine`: The deterministic question-matching engine class.
+- `ZeroFrameworkChatbot.WorkflowEngine`: The structured conversation-flow engine class.
+- `ZeroFrameworkChatbot.ConversationState`: Session and variable context manager.
+- `ZeroFrameworkChatbot.ChatbotRenderer`: Shadow DOM interface renderer.
+
+### Loader Script Tag Attributes
+- `data-chatbot-id`: Unique identifier of the chatbot configuration.
+- `data-chatbot-data`: Full URI-encoded or base64 serialized JSON configuration for instant zero-database embedding.
+- `data-config-url`: (Optional) Remote URL to fetch JSON configuration dynamically.
 
 ---
 

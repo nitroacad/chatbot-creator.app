@@ -5,12 +5,12 @@ This guide helps resolve common setup, rendering, matching, and integration issu
 ---
 
 ## 1. Widget Does Not Display on Website
-- **Symptom**: Script tag is present, but no chat launcher appears.
-- **Diagnosis**:
-  1. Open Developer Tools > Console in your browser.
-  2. If you see `[Chatbot] Domain ... is not authorized`, check the **Allowed Hostname Domains** setting under Publish & Embed in the Studio. Add `*` or include your domain.
-  3. Verify that the URL to `loader.js` returns HTTP 200 and not a 404.
-  4. Ensure your chatbot status is marked as **Published**.
+- **Symptom**: Script tag is present on an external website, but no chat launcher appears.
+- **Diagnosis & Fixes**:
+  1. **Cross-Origin / External Domain Storage Boundary**: When pasting an embed snippet on an external website (e.g. `https://my-store.com`), the host site cannot read your Studio's local browser storage. **Fix**: Use the **Universal Zero-Dependency Embed** option from the Publish tab (which encodes `data-chatbot-data="..."` directly in the tag) or specify `data-config-url`.
+  2. **Domain Authorization**: If you see `[Chatbot] Domain ... is not authorized` in the console, check the **Allowed Hostname Domains** setting under Publish & Embed. Add `*` or your website's domain name.
+  3. **Script Path Resolution**: Verify that the URL to `loader.js` returns HTTP 200. The loader automatically discovers and imports `chatbot.bundle.js` from the same origin directory.
+  4. **Ad-Blockers or Content Blockers**: Ensure aggressive browser extensions are not blocking script tags with "chatbot" in the URL name.
 
 ---
 

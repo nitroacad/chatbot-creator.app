@@ -4,12 +4,27 @@ This guide explains how to install your published chatbot widget onto common web
 
 ---
 
-## 1. The Standard Embedding Snippet
+## 1. The Standard Embedding Snippets
+
+### Option A: Universal Zero-Dependency Embed (Recommended)
+Guaranteed to display on any third-party website, CMS, or static host immediately without requiring an external database, API server, or shared browser storage:
 ```html
-<!-- Zero-Framework Custom Chatbot Widget -->
+<!-- Universal Zero-Framework Custom Chatbot Widget -->
 <script
   src="https://YOUR-DOMAIN.com/chatbot/loader.js"
   data-chatbot-id="YOUR-CHATBOT-ID"
+  data-chatbot-data="ENCODED_BOT_CONFIGURATION"
+  async
+></script>
+```
+
+### Option B: Dynamic Cloud Loader
+Loads configuration dynamically from your origin server, CDN, or serverless API:
+```html
+<script
+  src="https://YOUR-DOMAIN.com/chatbot/loader.js"
+  data-chatbot-id="YOUR-CHATBOT-ID"
+  data-config-url="https://YOUR-DOMAIN.com/data/templates/YOUR-CHATBOT-ID.json"
   async
 ></script>
 ```
@@ -17,6 +32,8 @@ This guide explains how to install your published chatbot widget onto common web
 ### Script Tag Attributes
 - `src`: URL to `loader.js` hosted on your static server or CDN.
 - `data-chatbot-id`: The unique ID of the chatbot configured in the studio.
+- `data-chatbot-data`: Full serialized chatbot configuration (URI-encoded or base64), eliminating database lookup latency and cross-domain storage boundaries.
+- `data-config-url`: (Optional) Remote URL to fetch JSON configuration dynamically.
 - `async`: Loads the script in the background without delaying initial page render.
 
 ---

@@ -95,15 +95,31 @@ When satisfied with your changes:
 2. The bot version increments, and the configuration is published.
 
 ## 18. Installing on a Standard HTML Website
-Copy the installation snippet from the **Publish & Embed** tab:
+In the **Publish & Embed** tab in the Chatbot Studio, you have two embed options:
+
+### Option 1: Universal Zero-Dependency Embed (Recommended)
+This self-contained snippet includes your customized knowledge base and settings directly in the script tag. It is guaranteed to display immediately on any website without needing a database or backend server:
+```html
+<!-- Universal Zero-Framework Custom Chatbot Embed -->
+<script
+  src="https://your-domain.com/chatbot/loader.js"
+  data-chatbot-id="your-chatbot-id"
+  data-chatbot-data="ENCODED_BOT_CONFIGURATION"
+  async
+></script>
+```
+
+### Option 2: Dynamic Cloud Loader Snippet
+For configurations hosted in your serverless backend or static repository:
 ```html
 <script
   src="https://your-domain.com/chatbot/loader.js"
   data-chatbot-id="your-chatbot-id"
+  data-config-url="https://your-domain.com/data/templates/your-chatbot-id.json"
   async
 ></script>
 ```
-Paste it right before the closing `</body>` tag of your HTML pages.
+Paste either snippet right before the closing `</body>` tag of your HTML pages.
 
 ## 19. Installing on WordPress
 1. Log into your WordPress Admin Dashboard.

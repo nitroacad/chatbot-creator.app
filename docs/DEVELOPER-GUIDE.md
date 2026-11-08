@@ -118,7 +118,21 @@ Every chatbot is represented by a strictly typed JSON object adhering to `data/s
 The widget renders inside a Shadow Root via `this.hostElement.attachShadow({ mode: 'open' })`. Host website CSS styles do not leak into the widget, and widget styles do not affect the host page.
 
 ## 18. Website Embedding Architecture
-A non-blocking asynchronous loader script (`chatbot/loader.js`) fetches the published chatbot configuration, inspects domain restrictions, imports `chatbot/adapters/website.js`, and creates the DOM widget.
+A non-blocking asynchronous loader script (`chatbot/loader.js`) dynamically downloads and launches the self-contained widget bundle (`chatbot/chatbot.bundle.js`). The widget engine is 100% dependency-free, avoiding cross-origin module loading issues when embedded on external customer domains, CMS platforms (WordPress, Shopify, Webflow), or static sites.
+
+### Multi-Tier Configuration Discovery Engine
+The embed loader implements a resilient 5-tier configuration discovery hierarchy to guarantee that a chatbot displays cleanly across any external environment:
+1. **Inlined JSON Data Attribute (`data-chatbot-data` or `data-config`):** Provides instant, zero-database embedding. The complete bot configuration is encoded directly in the script tag, ensuring instant rendering on any third-party domain without requiring server-side API setups.
+2. **Hosted Remote Configuration URL (`data-config-url`):** Directly fetches the published JSON configuration from any CORS-enabled CDN, S3 bucket, or static server.
+3. **Same-Origin LocalStorage:** When embedded on the same origin as the Studio, attempts to discover the draft or published bot configuration in `localStorage`.
+4. **Serverless API Bridge (`/api/chatbots/:id`):** When connected to the serverless bridge, queries the API backend for dynamic database-backed chatbot instances.
+5. **Static Template / Fallback Configuration:** Falls back to relative static template paths (`/data/templates/:id.json`) or a resilient default assistant configuration, preventing empty containers or broken widgets if an ID is missing.
+
+### Educational Showcase & Live Telemetry Mini-App (`demo/index.html`)
+The platform includes an isolated educational mini-app located in `demo/index.html` (with `demo/demo.js` and `demo/demo.css`). It simulates a live external customer storefront ("Nova Commerce & Support Portal") and features:
+- Interactive User Experience Tour demonstrating starters, FAQs, workflows, and handoffs.
+- Live Runtime Event Telemetry console reporting real-time knowledge matching scores, captured variables, and flow transitions.
+- Dynamic assistant switcher allowing users to test any studio-saved chatbot, template, or custom uploaded JSON configuration.
 
 ## 19. Integration Adapter Architecture
 All channel adapters inherit from `AdapterInterface`:
