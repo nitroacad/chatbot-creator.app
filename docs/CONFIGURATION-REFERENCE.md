@@ -125,3 +125,16 @@ Every chatbot configuration is stored as a validated JSON document complying wit
   }
 }
 ```
+
+---
+
+## 3. Embedding and Deployment Formats
+
+### Inlined Configuration Attribute (`data-chatbot-data`)
+For universal third-party website embedding with zero database setup:
+- Encodes the full configuration object using `encodeURIComponent(JSON.stringify(config))` or `base64:BASE64_DATA`.
+- Passed directly on the `<script>` tag alongside `data-chatbot-id`.
+
+### Dynamic Remote URL (`data-config-url`)
+For hosting configurations on static object storage, GitHub Pages, or serverless APIs:
+- Points directly to a hosted JSON endpoint (e.g. `https://my-cdn.com/chatbots/my-bot.json`).
