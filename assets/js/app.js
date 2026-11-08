@@ -631,8 +631,12 @@ class StudioApp {
                 <span class="badge badge-published" style="font-size: 11px;">Instant Display</span>
               </div>
               <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 10px;">Includes your assistant's customized responses directly in the script tag. Guaranteed to display on WordPress, Shopify, Webflow, GitHub Pages, or any HTML page with zero setup.</p>
-              <div class="code-box">
-                <pre>&lt;!-- Universal Zero-Framework Custom Chatbot Embed --&gt;
+              <div class="code-box" id="codebox-opt1">
+                <button type="button" class="btn-copy-code" data-target="code-opt1" aria-label="Copy Universal Embed Code">
+                  <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                  <span>Copy Code</span>
+                </button>
+                <pre id="code-opt1">&lt;!-- Universal Zero-Framework Custom Chatbot Embed --&gt;
 &lt;script
   src="${window.location.origin}/chatbot/loader.js"
   data-chatbot-id="${bot.id}"
@@ -646,8 +650,12 @@ class StudioApp {
             <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
               <h4 style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px;">Option 2: Cloud / Dynamic Config Loader</h4>
               <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 10px;">Loads configuration dynamically from your origin server or template repository.</p>
-              <div class="code-box">
-                <pre>&lt;!-- Dynamic Chatbot Loader --&gt;
+              <div class="code-box" id="codebox-opt2">
+                <button type="button" class="btn-copy-code" data-target="code-opt2" aria-label="Copy Cloud Loader Code">
+                  <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                  <span>Copy Code</span>
+                </button>
+                <pre id="code-opt2">&lt;!-- Dynamic Chatbot Loader --&gt;
 &lt;script
   src="${window.location.origin}/chatbot/loader.js"
   data-chatbot-id="${bot.id}"
@@ -698,6 +706,53 @@ class StudioApp {
         const tabId = btn.getAttribute('data-tab');
         const panel = document.getElementById(tabId);
         if (panel) panel.classList.add('active');
+      };
+    });
+
+    // Copy Code snippet buttons
+    document.querySelectorAll('.btn-copy-code').forEach(btn => {
+      btn.onclick = async () => {
+        const targetId = btn.getAttribute('data-target');
+        const targetEl = document.getElementById(targetId);
+        if (!targetEl) return;
+
+        const codeToCopy = targetEl.innerText || targetEl.textContent;
+        let copied = false;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(codeToCopy);
+            copied = true;
+          }
+        } catch (e) {
+          // fallback
+        }
+
+        if (!copied) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = codeToCopy;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            copied = document.execCommand('copy');
+            document.body.removeChild(ta);
+          } catch (e) {
+            console.warn('Fallback copy failed:', e);
+          }
+        }
+
+        const originalText = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          <span>✓ Copied!</span>
+        `;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = originalText;
+        }, 2000);
       };
     });
 
