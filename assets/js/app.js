@@ -1068,13 +1068,24 @@ class StudioApp {
     const content = document.getElementById('appContent');
     content.innerHTML = `
       <div style="max-width: 900px;">
+        <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; background: var(--surface); padding: 16px 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div>
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">Universal Documentation Hub</h3>
+            <p style="font-size: 13px; color: var(--slate-600);">Browse interactive HTML web guides designed for optimal readability, or view raw Markdown (.md) sources on GitHub.</p>
+          </div>
+          <a href="./docs/index.html" target="_blank" class="btn btn-primary" style="font-size: 12.5px;">Launch Docs Portal ↗</a>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px;">
           <div class="card">
-            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Developer Guide</h3>
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Developer Technical Guide</h3>
             <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px;">
               Complete technical specification covering system architecture, zero-framework philosophy, knowledge-base matching algorithms, and adapter interfaces.
             </p>
-            <a href="./docs/DEVELOPER-GUIDE.md" target="_blank" class="btn btn-primary" style="font-size: 12px;">Open Developer Guide</a>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <a href="./docs/developer-guide.html" target="_blank" class="btn btn-primary" style="font-size: 12px;">Web Guide (HTML)</a>
+              <a href="./docs/DEVELOPER-GUIDE.md" target="_blank" class="btn btn-secondary" style="font-size: 12px;">Raw Markdown</a>
+            </div>
           </div>
 
           <div class="card">
@@ -1082,19 +1093,40 @@ class StudioApp {
             <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px;">
               Step-by-step administrator handbook for creating, customizing, testing, publishing, and embedding support chatbots on your website.
             </p>
-            <a href="./docs/CHATBOT-OWNER-GUIDE.md" target="_blank" class="btn btn-primary" style="font-size: 12px;">Open Owner Guide</a>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <a href="./docs/chatbot-owner-guide.html" target="_blank" class="btn btn-primary" style="font-size: 12px;">Web Guide (HTML)</a>
+              <a href="./docs/CHATBOT-OWNER-GUIDE.md" target="_blank" class="btn btn-secondary" style="font-size: 12px;">Raw Markdown</a>
+            </div>
           </div>
         </div>
 
         <div class="card">
           <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Technical References</h3>
-          <ul style="padding-left: 20px; font-size: 13.5px; color: var(--slate-700); line-height: 2;">
-            <li><a href="./docs/INSTALLATION-GUIDE.md" target="_blank">Website Installation & CMS Guide (HTML, WordPress, Shopify, GitHub Pages)</a></li>
-            <li><a href="./docs/INTEGRATION-GUIDE.md" target="_blank">Multi-Channel Integration Guide (WhatsApp Cloud API, Telegram Bot API, Webhooks)</a></li>
-            <li><a href="./docs/CONFIGURATION-REFERENCE.md" target="_blank">Chatbot Configuration JSON Schema Reference</a></li>
-            <li><a href="./docs/API-REFERENCE.md" target="_blank">JavaScript API & Adapter Contract Reference</a></li>
-            <li><a href="./docs/SECURITY-AND-PRIVACY.md" target="_blank">Security, Content Security Policy (CSP), & Privacy Policies</a></li>
-            <li><a href="./docs/TROUBLESHOOTING.md" target="_blank">Troubleshooting & Error Recovery Manual</a></li>
+          <ul style="padding-left: 20px; font-size: 13.5px; color: var(--slate-700); line-height: 2.2;">
+            <li>
+              <strong><a href="./docs/installation-guide.html" target="_blank">Website Installation & CMS Guide</a></strong> (HTML, WordPress, Shopify, GitHub Pages)
+              <a href="./docs/INSTALLATION-GUIDE.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
+            <li>
+              <strong><a href="./docs/integration-guide.html" target="_blank">Multi-Channel Integration Guide</a></strong> (WhatsApp Cloud API, Telegram Bot API, Webhooks)
+              <a href="./docs/INTEGRATION-GUIDE.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
+            <li>
+              <strong><a href="./docs/configuration-reference.html" target="_blank">Chatbot Configuration JSON Schema Reference</a></strong>
+              <a href="./docs/CONFIGURATION-REFERENCE.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
+            <li>
+              <strong><a href="./docs/api-reference.html" target="_blank">JavaScript API & Adapter Contract Reference</a></strong>
+              <a href="./docs/API-REFERENCE.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
+            <li>
+              <strong><a href="./docs/security-and-privacy.html" target="_blank">Security, Content Security Policy (CSP), & Privacy Policies</a></strong>
+              <a href="./docs/SECURITY-AND-PRIVACY.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
+            <li>
+              <strong><a href="./docs/troubleshooting.html" target="_blank">Troubleshooting & Diagnostics Guide</a></strong>
+              <a href="./docs/TROUBLESHOOTING.md" target="_blank" style="margin-left: 8px; font-size: 12px; color: var(--slate-500);">[.md]</a>
+            </li>
           </ul>
         </div>
       </div>
