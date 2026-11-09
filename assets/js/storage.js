@@ -13,6 +13,26 @@ export class StorageManager {
   constructor() {
     this.db = null;
     this.isIndexedDBReady = false;
+    this.backendMode = localStorage.getItem('chatbot_studio_backend_mode') || 'local'; // 'local' or 'cloud'
+    this.apiBase = localStorage.getItem('chatbot_studio_api_url') || 'http://localhost:8000';
+    this.authToken = localStorage.getItem('chatbot_studio_auth_token') || null;
+  }
+
+  isCloudMode() {
+    return this.backendMode === 'cloud' && !!this.authToken;
+  }
+
+  setCloudSession(token) {
+    this.authToken = token;
+    if (token) {
+      localStorage.setItem('chatbot_studio_auth_token', token);
+      this.backendMode = 'cloud';
+      localStorage.setItem('chatbot_studio_backend_mode', 'cloud');
+    } else {
+      localStorage.removeItem('chatbot_studio_auth_token');
+      this.backendMode = 'local';
+      localStorage.setItem('chatbot_studio_backend_mode', 'local');
+    }
   }
 
   /**
@@ -65,6 +85,22 @@ export class StorageManager {
    * @returns {Promise<Array<object>>}
    */
   async getAllChatbots() {
+    if (this.isCloudMode()) {
+      try {
+        const res = await fetch(`${this.apiBase}/api/chatbots`, {
+          headers: {
+            'Authorization': `Bearer ${this.authToken}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return data.chatbots || [];
+        }
+      } catch (e) {
+        console.warn('Cloud API read failed, falling back to local storage', e);
+      }
+    }
+
     if (this.isIndexedDBReady && this.db) {
       try {
         return await new Promise((resolve, reject) => {
@@ -125,6 +161,22 @@ export class StorageManager {
       chatbot.createdAt = chatbot.updatedAt;
     }
 
+    if (this.isCloudMode()) {
+      const res = await fetch(`${this.apiBase}/api/chatbots`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.authToken}`
+        },
+        body: JSON.stringify(chatbot)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save chatbot to Cloud Backend');
+      }
+      return chatbot;
+    }
+
     // Save to IndexedDB
     if (this.isIndexedDBReady && this.db) {
       try {
@@ -162,6 +214,19 @@ export class StorageManager {
    * @param {string} id
    */
   async deleteChatbot(id) {
+    if (this.isCloudMode()) {
+      try {
+        await fetch(`${this.apiBase}/api/chatbots/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${this.authToken}`
+          }
+        });
+      } catch (e) {
+        console.warn('Cloud delete failed:', e);
+      }
+    }
+
     if (this.isIndexedDBReady && this.db) {
       try {
         await new Promise((resolve, reject) => {

@@ -1,0 +1,7 @@
+node_modules/
+backend/vendor/
+backend/database/*.sqlite
+backend/database/*.db
+.env
+backend/.env
+/home/jules/verification/

@@ -1134,7 +1134,301 @@ class StudioApp {
   }
 
   setupGlobalEvents() {
-    // Window-level helpers
+    this.setupBackendSwitcher();
+  }
+
+  setupBackendSwitcher() {
+    const toggleBtn = document.getElementById('backendToggleBtn');
+    const label = document.getElementById('backendModeLabel');
+    const userSection = document.getElementById('userAccountSection');
+    const authModal = document.getElementById('authModal');
+    const closeAuthBtn = document.getElementById('closeAuthModalBtn');
+    const authForm = document.getElementById('authForm');
+    const authTabLogin = document.getElementById('authTabLogin');
+    const authTabRegister = document.getElementById('authTabRegister');
+    const authNameGroup = document.getElementById('authNameGroup');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authErrorMsg = document.getElementById('authErrorMsg');
+    const membershipBtn = document.getElementById('membershipBtn');
+    const membershipModal = document.getElementById('membershipModal');
+    const closeMembershipBtn = document.getElementById('closeMembershipModalBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const billingToggleBtn = document.getElementById('billingCycleToggleBtn');
+    const billingCycleText = document.getElementById('billingCycleText');
+
+    let isRegisterMode = false;
+    let billingCycle = 'monthly'; // 'monthly' or 'yearly'
+
+    const updateUIState = async () => {
+      if (storage.isCloudMode()) {
+        label.textContent = '☁️ PHP Cloud SaaS';
+        toggleBtn.classList.remove('btn-outline');
+        toggleBtn.classList.add('btn-primary');
+        userSection.style.display = 'flex';
+
+        // Fetch user & membership profile
+        try {
+          const res = await fetch(`${storage.apiBase}/api/auth/me`, {
+            headers: { 'Authorization': `Bearer ${storage.authToken}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const planBadge = document.getElementById('userPlanBadge');
+            if (planBadge && data.membership) {
+              const limitStr = data.bot_limit > 10000 ? 'Unlimited' : `${data.bot_count}/${data.bot_limit} Bots`;
+              planBadge.textContent = `${data.membership.plan_name} (${limitStr})`;
+            }
+          } else {
+            // Token expired or invalid
+            storage.setCloudSession(null);
+            updateUIState();
+          }
+        } catch (e) {
+          console.warn('Backend offline or unreachable', e);
+        }
+      } else {
+        label.textContent = '🖥️ Local Offline';
+        toggleBtn.classList.remove('btn-primary');
+        toggleBtn.classList.add('btn-outline');
+        userSection.style.display = 'none';
+      }
+    };
+
+    updateUIState();
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        if (storage.isCloudMode()) {
+          // Switch back to local mode
+          storage.setCloudSession(null);
+          this.showToast('Switched to Local Offline mode.', 'info');
+          updateUIState();
+          this.refreshCurrentView();
+        } else {
+          // Open Auth modal for Cloud SaaS
+          authModal.style.display = 'flex';
+          authErrorMsg.style.display = 'none';
+        }
+      });
+    }
+
+    if (closeAuthBtn) {
+      closeAuthBtn.addEventListener('click', () => {
+        authModal.style.display = 'none';
+      });
+    }
+
+    if (authTabLogin) {
+      authTabLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        isRegisterMode = false;
+        authTabLogin.classList.add('active');
+        authTabRegister.classList.remove('active');
+        authNameGroup.style.display = 'none';
+        authSubmitBtn.textContent = 'Sign In to Cloud Studio';
+        authErrorMsg.style.display = 'none';
+      });
+    }
+
+    if (authTabRegister) {
+      authTabRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        isRegisterMode = true;
+        authTabRegister.classList.add('active');
+        authTabLogin.classList.remove('active');
+        authNameGroup.style.display = 'block';
+        authSubmitBtn.textContent = 'Create Cloud Account';
+        authErrorMsg.style.display = 'none';
+      });
+    }
+
+    if (authForm) {
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authErrorMsg.style.display = 'none';
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        const name = document.getElementById('authName').value || 'User';
+
+        const endpoint = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+        const payload = isRegisterMode ? { name, email, password } : { email, password };
+
+        try {
+          const res = await fetch(`${storage.apiBase}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            authErrorMsg.textContent = data.error || 'Authentication failed.';
+            authErrorMsg.style.display = 'block';
+            return;
+          }
+
+          storage.setCloudSession(data.token);
+          authModal.style.display = 'none';
+          this.showToast(`Connected to Cloud SaaS as ${data.user.name}!`, 'success');
+          await updateUIState();
+          await this.reloadChatbots();
+          this.refreshCurrentView();
+        } catch (err) {
+          authErrorMsg.textContent = 'Could not reach PHP backend server on port 8000.';
+          authErrorMsg.style.display = 'block';
+        }
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        storage.setCloudSession(null);
+        this.showToast('Signed out of cloud backend.', 'info');
+        updateUIState();
+        this.reloadChatbots().then(() => this.refreshCurrentView());
+      });
+    }
+
+    if (membershipBtn) {
+      membershipBtn.addEventListener('click', () => {
+        this.openMembershipModal(billingCycle);
+      });
+    }
+
+    if (closeMembershipBtn) {
+      closeMembershipBtn.addEventListener('click', () => {
+        membershipModal.style.display = 'none';
+      });
+    }
+
+    if (billingToggleBtn) {
+      billingToggleBtn.addEventListener('click', () => {
+        billingCycle = billingCycle === 'monthly' ? 'yearly' : 'monthly';
+        billingCycleText.textContent = billingCycle === 'monthly' ? 'Switch to Yearly' : 'Switch to Monthly';
+        this.openMembershipModal(billingCycle);
+      });
+    }
+  }
+
+  async openMembershipModal(billingCycle = 'monthly') {
+    const modal = document.getElementById('membershipModal');
+    const grid = document.getElementById('plansGrid');
+    if (!modal || !grid) return;
+
+    modal.style.display = 'flex';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">Loading membership plans...</div>';
+
+    try {
+      const res = await fetch(`${storage.apiBase}/api/plans`);
+      const data = await res.json();
+      const plans = data.plans || [];
+
+      grid.innerHTML = plans.map(p => {
+        const price = billingCycle === 'yearly' ? p.price_yearly : p.price_monthly;
+        const priceSuffix = billingCycle === 'yearly' ? '/yr' : '/mo';
+        const isPop = p.is_popular;
+        const features = p.features || [];
+
+        return `
+          <div class="card" style="position: relative; border: ${isPop ? '2px solid var(--color-primary)' : '1px solid var(--border-color)'}; display: flex; flex-direction: column; justify-content: space-between; border-radius: var(--radius-lg); padding: 20px;">
+            ${isPop ? '<span class="badge" style="position: absolute; top: -10px; right: 16px; background: var(--color-primary); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full);">⭐ Favorite Choice</span>' : ''}
+            <div>
+              <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 4px;">${p.name}</h4>
+              <div style="font-size: 1.75rem; font-weight: 800; margin: 12px 0;">
+                $${price}<span style="font-size: 0.875rem; font-weight: 500; color: var(--text-muted);">${priceSuffix}</span>
+              </div>
+              <p style="font-size: 0.8125rem; font-weight: 600; color: var(--color-primary); margin-bottom: 14px;">
+                ${p.bot_limit > 10000 ? 'Unlimited Chatbots' : `Up to ${p.bot_limit} Chatbots`}
+              </p>
+              <ul style="font-size: 0.8125rem; color: var(--text-muted); padding-left: 18px; margin-bottom: 20px; line-height: 1.6;">
+                ${features.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <button class="btn ${isPop ? 'btn-primary' : 'btn-outline'} plan-select-btn" data-plan-id="${p.id}" style="width: 100%; font-weight: 600; font-size: 0.8125rem;">
+                ${price == 0 ? 'Current Free Plan' : `Pay with PayPal (${p.name})`}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers to PayPal plan checkout buttons
+      grid.querySelectorAll('.plan-select-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const planId = e.currentTarget.getAttribute('data-plan-id');
+          await this.handlePlanCheckout(planId, billingCycle);
+        });
+      });
+    } catch (e) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; color: var(--color-danger); text-align: center;">Failed to load plans from server.</div>';
+    }
+  }
+
+  async handlePlanCheckout(planId, billingCycle) {
+    if (!storage.isCloudMode()) {
+      this.showToast('Please sign in to Cloud SaaS first.', 'error');
+      return;
+    }
+
+    try {
+      this.showToast('Initializing secure PayPal payment...', 'info');
+      const res = await fetch(`${storage.apiBase}/api/subscription/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${storage.authToken}`
+        },
+        body: JSON.stringify({ plan_id: planId, billing_cycle: billingCycle })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        this.showToast(data.error || 'Subscription checkout failed.', 'error');
+        return;
+      }
+
+      if (data.amount <= 0 || data.message) {
+        this.showToast(data.message || 'Free Starter plan activated!', 'success');
+        document.getElementById('membershipModal').style.display = 'none';
+        this.setupBackendSwitcher();
+        return;
+      }
+
+      // Simulate or execute PayPal Capture
+      const orderId = data.order?.id;
+      const capRes = await fetch(`${storage.apiBase}/api/subscription/capture`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${storage.authToken}`
+        },
+        body: JSON.stringify({ order_id: orderId, plan_id: planId, billing_cycle: billingCycle })
+      });
+      const capData = await capRes.json();
+
+      if (capRes.ok) {
+        this.showToast(capData.message || 'Payment confirmed via PayPal!', 'success');
+        document.getElementById('membershipModal').style.display = 'none';
+        this.setupBackendSwitcher();
+      } else {
+        this.showToast(capData.error || 'Payment capture failed.', 'error');
+      }
+    } catch (e) {
+      this.showToast('Payment processing error: ' + e.message, 'error');
+    }
+  }
+
+  async reloadChatbots() {
+    const bots = await storage.getAllChatbots();
+    state.setChatbots(bots);
+  }
+
+  refreshCurrentView() {
+    const hash = window.location.hash.slice(1) || '/';
+    if (this.router) {
+      this.router.navigate(hash);
+    }
   }
 }
 
